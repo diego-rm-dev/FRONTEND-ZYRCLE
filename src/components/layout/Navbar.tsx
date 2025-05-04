@@ -26,6 +26,7 @@ export function Navbar() {
         try {
             const { account } = await connectWallet();
             setWalletAddress(account);
+            sessionStorage.setItem("walletAddress", account);
             setWalletConnected(true);
             localStorage.setItem("walletConnected", "true");
         } catch (error) {

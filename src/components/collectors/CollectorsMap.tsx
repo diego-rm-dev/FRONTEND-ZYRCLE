@@ -9,6 +9,7 @@ import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { LeafletMap } from "./LeafletMap";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export function CollectorsMap() {
     const [containers, setContainers] = useState([]);
@@ -19,6 +20,7 @@ export function CollectorsMap() {
         weekContainers: 0,
         co2Saved: 0,
     });
+    const location = useLocation();
 
     // Estado para rutas visitadas
     const [visitedRoutes, setVisitedRoutes] = useState<string[]>([]);
@@ -31,6 +33,13 @@ export function CollectorsMap() {
             setVisitedRoutes(JSON.parse(savedVisited));
         }
     }, []);
+
+    useEffect(() => {
+        if (location.state?.preserveRoute) {
+            setRouteOptimized(true);
+        }
+    }, [location.state]);
+
 
     // Actualizar orderedContainers cuando cambian containers o visitedRoutes
     useEffect(() => {
@@ -57,17 +66,12 @@ export function CollectorsMap() {
         containers.forEach((container) => {
             const lastUpdatedDate = new Date(container.lastUpdated);
             const weight = container.estimatedWeight;
-            console.log("this is my container: ", container);
 
             if (
                 lastUpdatedDate.getUTCFullYear() === today.getUTCFullYear() &&
                 lastUpdatedDate.getUTCMonth() === today.getUTCMonth() &&
                 lastUpdatedDate.getUTCDate() === today.getUTCDate()
             ) {
-                todayWeight += weight;
-                todayContainers += 1;
-            }
-            {
                 todayWeight += weight;
                 todayContainers += 1;
             }
@@ -87,20 +91,19 @@ export function CollectorsMap() {
             weekContainers,
             co2Saved,
         });
-
-        console.log(todayWeight, todayContainers, weekWeight, weekContainers, co2Saved);
     };
 
     useEffect(() => {
         fetch("https://zyrcle-backend.diegormdev.site/api/rutas/quemadas")
             .then((res) => res.json())
             .then((data) => {
-                console.log("containers received:", data);
                 setContainers(data);
                 calculateStats(data);
             })
             .catch((err) => console.error(err));
     }, []);
+
+    const navigate = useNavigate();
 
     const navigateTo = (container) => {
         navigator.geolocation.getCurrentPosition((pos) => {
@@ -108,6 +111,9 @@ export function CollectorsMap() {
             const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${latitude},${longitude}&destination=${container.latitude},${container.longitude}&travelmode=driving`;
             window.open(googleMapsUrl, "_blank");
         });
+    };
+
+    const handleArrived = (container) => {
         // Marcar la ruta como visitada y moverla al final
         setVisitedRoutes((prev) => {
             if (!prev.includes(container.id)) {
@@ -115,6 +121,8 @@ export function CollectorsMap() {
             }
             return prev;
         });
+        // Redirigir a la página de verificación con los datos del contenedor
+        navigate(`/verify-container/${container.id}`, { state: { container } });
     };
 
     const resetVisitedRoutes = () => {
@@ -348,7 +356,6 @@ export function CollectorsMap() {
                                                                 </p>
                                                             </div>
                                                         </div>
-                                                        skateboarding dog
                                                         <div>
                                                             <div className="flex justify-between text-sm">
                                                                 <span>Fill Level</span>
@@ -369,16 +376,28 @@ export function CollectorsMap() {
                                                                 </TooltipContent>
                                                             </Tooltip>
                                                         </div>
-                                                        <Button
-                                                            onClick={() => navigateTo(container)}
-                                                            className={`w-full transition-all duration-200 ${isVisited
-                                                                ? "bg-gray-300 hover:bg-gray-400 text-gray-700"
-                                                                : "bg-eco-emerald hover:bg-eco-emerald-dark text-white"
-                                                                }`}
-                                                        >
-                                                            <Navigation className="h-5 w-5 mr-2" />
-                                                            Navigate
-                                                        </Button>
+                                                        <div className="flex space-x-2">
+                                                            <Button
+                                                                onClick={() => navigateTo(container)}
+                                                                className={`flex-1 transition-all duration-200 ${isVisited
+                                                                    ? "bg-gray-300 hover:bg-gray-400 text-gray-700"
+                                                                    : "bg-eco-emerald hover:bg-eco-emerald-dark text-white"
+                                                                    }`}
+                                                            >
+                                                                <Navigation className="h-5 w-5 mr-2" />
+                                                                Navigate
+                                                            </Button>
+                                                            <Button
+                                                                onClick={() => handleArrived(container)}
+                                                                className={`flex-1 transition-all duration-200 ${isVisited
+                                                                    ? "bg-gray-300 hover:bg-gray-400 text-gray-700"
+                                                                    : "bg-eco-lime hover:bg-eco-lime-dark text-white"
+                                                                    }`}
+                                                            >
+                                                                <CheckCircle className="h-5 w-5 mr-2" />
+                                                                I Arrived!
+                                                            </Button>
+                                                        </div>
                                                     </AccordionContent>
                                                 </AccordionItem>
                                             );

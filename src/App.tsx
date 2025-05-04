@@ -14,6 +14,7 @@ import Marketplace from "./pages/Marketplace";
 import NotFound from "./pages/NotFound";
 import RecyclingAccessPage from "./pages/RecyclingPage";
 import EventHistoryPage from "./pages/EventHistory";
+import { ContainerVerification } from "./components/collectors/ContainerVerification";
 
 const queryClient = new QueryClient();
 
@@ -127,6 +128,7 @@ const App = () => (
             }
           />
           <Route path="*" element={<NotFound />} />
+          <Route path="/verify-container/:containerId" element={<ContainerVerification />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
