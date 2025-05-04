@@ -656,6 +656,5 @@ const AbiCore = [
         "stateMutability": "view",
         "type": "function"
     }
-];
-
+]
 export default AbiCore;
