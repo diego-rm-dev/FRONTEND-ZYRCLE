@@ -10,6 +10,9 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { LeafletMap } from "./LeafletMap";
 import { useLocation, useNavigate } from "react-router-dom";
+import { toast } from "@/hooks/use-toast";
+import Web3 from "web3";
+import AbiCore from "@/lib/Abis";
 
 export function CollectorsMap() {
     const [containers, setContainers] = useState([]);
@@ -21,6 +24,13 @@ export function CollectorsMap() {
         co2Saved: 0,
     });
     const location = useLocation();
+    const CONTRACT_ADDRESS = "0x3B677E9ab4C216433Aadc61341DB3C750B493C1b";
+    const dropOffCenter = {
+        name: "Main Drop-off Center",
+        latitude: 6.2455,
+        longitude: -75.5612
+    };
+
 
     // Estado para rutas visitadas
     const [visitedRoutes, setVisitedRoutes] = useState<string[]>([]);
@@ -47,6 +57,12 @@ export function CollectorsMap() {
         const visited = containers.filter((c) => visitedRoutes.includes(c.id));
         setOrderedContainers([...nonVisited, ...visited]);
     }, [containers, visitedRoutes]);
+
+    const allVisited =
+        containers.length > 0 &&
+        visitedRoutes.length === containers.length &&
+        containers.every((c) => visitedRoutes.includes(c.id));
+
 
     // Guardar visitedRoutes en localStorage cuando cambie
     useEffect(() => {
@@ -113,6 +129,52 @@ export function CollectorsMap() {
         });
     };
 
+    const handleSubmitBatchDelivery = async () => {
+        try {
+            const web3 = new Web3(window.ethereum);
+            const contract = new web3.eth.Contract(AbiCore, CONTRACT_ADDRESS);
+            const accounts = await web3.eth.getAccounts();
+            const account = accounts[0];
+
+            if (visitedRoutes.length === 0) {
+                toast({ title: "No containers", description: "You haven't confirmed any containers yet." });
+                return;
+            }
+
+            // 🔥 Paso 1: Confirmar (quemar) todos los contenedores con datos dummy
+            for (const id of visitedRoutes) {
+                await contract.methods
+                    .confirmCollection(
+                        account,
+                        parseInt(id),
+                        "Plástico", // tipo quemado
+                        "QmDummyCid123456789", // CID quemado
+                        1000 // peso en gramos quemado (1kg)
+                    )
+                    .send({ from: account });
+            }
+
+            // 🔥 Paso 2: Enviar el batch
+            const containerIds = visitedRoutes.map((id) => parseInt(id));
+            await contract.methods.submitBatchDelivery(containerIds).send({ from: account });
+
+            toast({
+                title: "Batch Sent!",
+                description: "The delivery was submitted successfully.",
+            });
+
+            setVisitedRoutes([]); // Limpiar rutas si quieres
+        } catch (err) {
+            console.error("Delivery failed:", err);
+            toast({
+                variant: "destructive",
+                title: "Error",
+                description: "Could not submit delivery.",
+            });
+        }
+    };
+
+
     const handleArrived = (container) => {
         // Marcar la ruta como visitada y moverla al final
         setVisitedRoutes((prev) => {
@@ -176,6 +238,7 @@ export function CollectorsMap() {
         return totalDistance / averageSpeed;
     };
 
+
     const [totalDistance, setTotalDistance] = useState(0);
     const [estimatedTime, setEstimatedTime] = useState(0);
 
@@ -205,6 +268,37 @@ export function CollectorsMap() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 p-4 max-w-7xl mx-auto">
                 {/* Mapa y Rutas - 8 columnas */}
                 <div className="lg:col-span-8 space-y-6">
+                    {!allVisited && (
+                        <Card className="bg-eco-emerald/10 border-eco-emerald/20 rounded-xl p-4 shadow-md mb-6 animate-fade-in">
+                            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+                                <div>
+                                    <h3 className="text-lg font-bold text-eco-forest flex items-center">
+                                        <Truck className="h-5 w-5 mr-2 text-eco-emerald" />
+                                        All routes completed!
+                                    </h3>
+                                    <p className="text-sm text-eco-forest/70">
+                                        Proceed to the drop-off center to finalize today's batch.
+                                    </p>
+                                </div>
+                                <div className="flex gap-2">
+                                    <Button
+                                        variant="secondary"
+                                        onClick={() => navigateTo(dropOffCenter)}
+                                        className="bg-white text-eco-emerald hover:bg-eco-emerald/10"
+                                    >
+                                        Navigate to Drop-off
+                                    </Button>
+                                    <Button
+                                        onClick={handleSubmitBatchDelivery}
+                                        className="bg-eco-emerald text-white hover:bg-eco-emerald-dark"
+                                    >
+                                        Confirm Delivery
+                                    </Button>
+                                </div>
+                            </div>
+                        </Card>
+                    )}
+
                     <Card className="shadow-md border-0 rounded-xl overflow-hidden">
                         <CardHeader className="bg-gradient-to-r from-eco-lime/10 to-eco-emerald/10">
                             <div className="flex justify-between items-center">
@@ -296,6 +390,7 @@ export function CollectorsMap() {
                                 )}
                             </div>
                         </CardHeader>
+
                         <CardContent className="p-6">
                             {routeOptimized ? (
                                 orderedContainers.length > 0 ? (
@@ -303,7 +398,8 @@ export function CollectorsMap() {
                                         type="single"
                                         collapsible
                                         defaultValue={
-                                            orderedContainers.length > 0 && !visitedRoutes.includes(orderedContainers[0].id)
+                                            orderedContainers.length > 0 &&
+                                                !visitedRoutes.includes(orderedContainers[0].id)
                                                 ? `container-${orderedContainers[0].id}`
                                                 : undefined
                                         }
@@ -337,7 +433,11 @@ export function CollectorsMap() {
                                                                 )}
                                                                 <span>{container.address}</span>
                                                             </div>
-                                                            <Badge className={`${statusColor(container.status)} font-medium`}>
+                                                            <Badge
+                                                                className={`${statusColor(
+                                                                    container.status
+                                                                )} font-medium`}
+                                                            >
                                                                 {container.status}
                                                             </Badge>
                                                         </div>
@@ -348,9 +448,7 @@ export function CollectorsMap() {
                                                     >
                                                         <div className="flex justify-between items-start">
                                                             <div>
-                                                                <p className="text-sm font-medium">
-                                                                    {container.type}
-                                                                </p>
+                                                                <p className="text-sm font-medium">{container.type}</p>
                                                                 <p className="text-sm">
                                                                     Weight: {container.estimatedWeight} kg
                                                                 </p>
@@ -367,7 +465,9 @@ export function CollectorsMap() {
                                                                 <TooltipTrigger asChild>
                                                                     <Progress
                                                                         value={container.fillPercentage}
-                                                                        className={`h-3 mt-1 ${isVisited ? "bg-gray-300" : "bg-eco-emerald/20"
+                                                                        className={`h-3 mt-1 ${isVisited
+                                                                            ? "bg-gray-300"
+                                                                            : "bg-eco-emerald/20"
                                                                             }`}
                                                                     />
                                                                 </TooltipTrigger>
@@ -415,6 +515,7 @@ export function CollectorsMap() {
                             )}
                         </CardContent>
                     </Card>
+
                 </div>
 
                 {/* Sidebar - 4 columnas */}

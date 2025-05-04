@@ -125,21 +125,25 @@ export function Navbar() {
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
+                        <Link to="/my-certificates" className="text-eco-forest hover:bg-eco-emerald/5">
+                            My Certificates
+                        </Link>
+
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button
                                     variant="ghost"
                                     className="text-eco-forest hover:text-white font-medium px-3 py-2 rounded-md"
                                 >
-                                    Verifiers
+                                    Validators
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent className="bg-white rounded-xl shadow-sm border-eco-emerald/20">
-                                <DropdownMenuLabel className="text-eco-forest">For Verifiers</DropdownMenuLabel>
+                                <DropdownMenuLabel className="text-eco-forest">For Validators</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem asChild>
-                                    <Link to="/verify" className="text-eco-forest hover:bg-eco-emerald/5">
-                                        Verifier
+                                    <Link to="/validator" className="text-eco-forest hover:bg-eco-emerald/5">
+                                        Event Validator
                                     </Link>
                                 </DropdownMenuItem>
                             </DropdownMenuContent>

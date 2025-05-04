@@ -1,12 +1,45 @@
-
+import { useEffect, useState } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { ProductGrid } from "@/components/marketplace/ProductGrid";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, CircleDollarSign } from "lucide-react";
+import Web3 from "web3";
+import AbiToken from "@/lib/TokenAbi";
+
+const TOKEN_ADDRESS = "0xdaE9f1674b494B72210d7FBBEb27Fc32d590D7EA";
+
+// Función utilitaria para obtener balance
+async function getZirBalance(address: string): Promise<number> {
+    const web3 = new Web3(window.ethereum);
+    const token = new web3.eth.Contract(AbiToken, TOKEN_ADDRESS);
+    const balance = await token.methods.balanceOf(address).call();
+    return parseFloat(web3.utils.fromWei(balance, "ether"));
+}
 
 const Marketplace = () => {
+    const [zirBalance, setZirBalance] = useState<number | null>(null);
+
+    useEffect(() => {
+        const fetchBalance = async () => {
+            try {
+                const web3 = new Web3(window.ethereum);
+                const accounts = await web3.eth.getAccounts();
+                const address = accounts[0] || sessionStorage.getItem("walletAddress");
+
+                if (!address) return;
+
+                const balance = await getZirBalance(address);
+                setZirBalance(balance);
+            } catch (err) {
+                console.error("Error fetching ZIR balance:", err);
+            }
+        };
+
+        fetchBalance();
+    }, []);
+
     return (
         <div className="min-h-screen flex flex-col">
             <Navbar />
@@ -25,7 +58,9 @@ const Marketplace = () => {
                         <div className="flex items-center gap-2">
                             <div className="flex items-center bg-white px-4 py-2 rounded-full shadow-sm">
                                 <CircleDollarSign className="h-4 w-4 text-eco-token mr-2" />
-                                <span className="text-sm font-medium">245.8 ZYRCLE</span>
+                                <span className="text-sm font-medium">
+                                    {zirBalance !== null ? `${zirBalance.toFixed(2)} ZYRCLE` : "Loading..."}
+                                </span>
                             </div>
                         </div>
                     </div>

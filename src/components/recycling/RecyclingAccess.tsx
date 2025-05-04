@@ -19,6 +19,12 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 
+import Web3 from "web3";
+import AbiToken from "../../lib/TokenAbi";
+
+const TOKEN_ADDRESS = "0xdaE9f1674b494B72210d7FBBEb27Fc32d590D7EA";
+
+
 // Define interfaces for API responses
 interface ValidationResponse {
     message: string;
@@ -69,6 +75,15 @@ const mockContainerData = [
     },
 ];
 
+
+export async function getZirBalance(address: string): Promise<number> {
+    const web3 = new Web3(window.ethereum);
+    const token = new web3.eth.Contract(AbiToken, TOKEN_ADDRESS);
+    const balance = await token.methods.balanceOf(address).call();
+    return parseFloat(web3.utils.fromWei(balance, "ether"));
+}
+
+
 export function RecyclingAccess() {
     const [qrCode, setQrCode] = useState<string>("");
     const [manualCode, setManualCode] = useState<string>("");
@@ -77,9 +92,9 @@ export function RecyclingAccess() {
     const [startTime, setStartTime] = useState<number | null>(null);
     const [validationMessage, setValidationMessage] = useState<string>("");
     const [connectedContainer, setConnectedContainer] = useState(null);
+    const [zirBalance, setZirBalance] = useState(0);
     const { toast } = useToast();
     // Mock static Zir balance (to be replaced with dynamic wallet balance)
-    const zirBalance = 125.7;
 
     // Handle QR code scan
     const handleScan = (data: QrScanResult | null) => {
@@ -189,7 +204,7 @@ export function RecyclingAccess() {
                 if (weightInKg > 0) {
                     // Conectar wallet y llamar contrato
                     const { account, zyrcleCore } = await connectWallet();
-                    const tx = await depositWaste(zyrcleCore, account, weightInKg);
+                    const tx = await depositWaste(zyrcleCore, account, 19000000000000000000000000);
                     console.log("Tx confirmada:", tx.transactionHash);
                 }
             } else {
@@ -215,6 +230,24 @@ export function RecyclingAccess() {
         setValidationMessage("");
         setStartTime(null);
     };
+
+    useEffect(() => {
+        const fetchBalance = async () => {
+            const address = sessionStorage.getItem("walletAddress");
+            if (!address) return;
+
+            try {
+                const balance = await getZirBalance(address);
+                console.log("ZIR balance:", balance.toFixed(18));
+                setZirBalance(balance);
+            } catch (err) {
+                console.error("Error fetching ZIR balance:", err);
+            }
+        };
+
+        fetchBalance();
+    }, []);
+
 
     return (
         <TooltipProvider>

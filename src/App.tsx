@@ -15,6 +15,7 @@ import NotFound from "./pages/NotFound";
 import RecyclingAccessPage from "./pages/RecyclingPage";
 import EventHistoryPage from "./pages/EventHistory";
 import { ContainerVerification } from "./components/collectors/ContainerVerification";
+import MyCertificates from "./pages/MyCertificates";
 
 const queryClient = new QueryClient();
 
@@ -120,7 +121,7 @@ const App = () => (
             }
           />
           <Route
-            path="/verify"
+            path="/validator"
             element={
               <ProtectedRoute>
                 <EventHistoryPage />
@@ -128,6 +129,7 @@ const App = () => (
             }
           />
           <Route path="*" element={<NotFound />} />
+          <Route path="/my-certificates" element={<MyCertificates />} />
           <Route path="/verify-container/:containerId" element={<ContainerVerification />} />
         </Routes>
       </BrowserRouter>

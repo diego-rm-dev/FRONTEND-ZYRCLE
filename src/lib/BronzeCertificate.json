@@ -1,0 +1,15 @@
+{
+    "name": "Zyrcle Certificate - Bronze",
+    "description": "Awarded for avoiding 500 kg of CO₂ emissions.",
+    "image": "ipfs://bafybeiezq2dekmilwfel2faqfhjsdtytkadz7457vr446z5opov3uzw3na",
+    "attributes": [
+        {
+            "trait_type": "Level",
+            "value": "Bronze"
+        },
+        {
+            "trait_type": "CO2 Saved",
+            "value": "500 kg"
+        }
+    ]
+}

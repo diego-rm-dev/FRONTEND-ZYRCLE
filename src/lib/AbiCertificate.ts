@@ -1,17 +1,6 @@
-const AbiCore = [
+const AbiCertificate = [
     {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "tokenAddress",
-                "type": "address"
-            },
-            {
-                "internalType": "address",
-                "name": "certAddress",
-                "type": "address"
-            }
-        ],
+        "inputs": [],
         "stateMutability": "nonpayable",
         "type": "constructor"
     },
@@ -37,40 +26,131 @@ const AbiCore = [
         "type": "error"
     },
     {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "sender",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "tokenId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "address",
+                "name": "owner",
+                "type": "address"
+            }
+        ],
+        "name": "ERC721IncorrectOwner",
+        "type": "error"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "operator",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "tokenId",
+                "type": "uint256"
+            }
+        ],
+        "name": "ERC721InsufficientApproval",
+        "type": "error"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "approver",
+                "type": "address"
+            }
+        ],
+        "name": "ERC721InvalidApprover",
+        "type": "error"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "operator",
+                "type": "address"
+            }
+        ],
+        "name": "ERC721InvalidOperator",
+        "type": "error"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "owner",
+                "type": "address"
+            }
+        ],
+        "name": "ERC721InvalidOwner",
+        "type": "error"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "receiver",
+                "type": "address"
+            }
+        ],
+        "name": "ERC721InvalidReceiver",
+        "type": "error"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "sender",
+                "type": "address"
+            }
+        ],
+        "name": "ERC721InvalidSender",
+        "type": "error"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "tokenId",
+                "type": "uint256"
+            }
+        ],
+        "name": "ERC721NonexistentToken",
+        "type": "error"
+    },
+    {
         "anonymous": false,
         "inputs": [
             {
                 "indexed": true,
                 "internalType": "address",
-                "name": "collector",
+                "name": "owner",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "approved",
                 "type": "address"
             },
             {
                 "indexed": true,
                 "internalType": "uint256",
-                "name": "batchId",
-                "type": "uint256"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256[]",
-                "name": "containerIds",
-                "type": "uint256[]"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "totalWeight",
-                "type": "uint256"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "timestamp",
+                "name": "tokenId",
                 "type": "uint256"
             }
         ],
-        "name": "BatchDelivered",
+        "name": "Approval",
         "type": "event"
     },
     {
@@ -79,54 +159,39 @@ const AbiCore = [
             {
                 "indexed": true,
                 "internalType": "address",
-                "name": "recipient",
+                "name": "owner",
                 "type": "address"
             },
             {
                 "indexed": true,
-                "internalType": "uint256",
-                "name": "eventId",
-                "type": "uint256"
+                "internalType": "address",
+                "name": "operator",
+                "type": "address"
             },
             {
                 "indexed": false,
-                "internalType": "uint256",
-                "name": "certificateId",
-                "type": "uint256"
+                "internalType": "bool",
+                "name": "approved",
+                "type": "bool"
             }
         ],
-        "name": "CertificateIssued",
+        "name": "ApprovalForAll",
         "type": "event"
     },
     {
         "inputs": [
             {
                 "internalType": "address",
-                "name": "collector",
+                "name": "to",
                 "type": "address"
             },
             {
                 "internalType": "uint256",
-                "name": "containerId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "string",
-                "name": "containerType",
-                "type": "string"
-            },
-            {
-                "internalType": "string",
-                "name": "photoCid",
-                "type": "string"
-            },
-            {
-                "internalType": "uint256",
-                "name": "weight",
+                "name": "tokenId",
                 "type": "uint256"
             }
         ],
-        "name": "confirmCollection",
+        "name": "approve",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -135,57 +200,20 @@ const AbiCore = [
         "anonymous": false,
         "inputs": [
             {
-                "indexed": true,
-                "internalType": "address",
-                "name": "collector",
-                "type": "address"
-            },
-            {
-                "indexed": true,
-                "internalType": "uint256",
-                "name": "containerId",
-                "type": "uint256"
-            },
-            {
-                "indexed": false,
-                "internalType": "string",
-                "name": "containerType",
-                "type": "string"
-            },
-            {
-                "indexed": false,
-                "internalType": "string",
-                "name": "photoCid",
-                "type": "string"
-            },
-            {
                 "indexed": false,
                 "internalType": "uint256",
-                "name": "weight",
+                "name": "_fromTokenId",
                 "type": "uint256"
             },
             {
                 "indexed": false,
                 "internalType": "uint256",
-                "name": "timestamp",
+                "name": "_toTokenId",
                 "type": "uint256"
             }
         ],
-        "name": "ContainerCollected",
+        "name": "BatchMetadataUpdate",
         "type": "event"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "weight",
-                "type": "uint256"
-            }
-        ],
-        "name": "depositWaste",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
     },
     {
         "inputs": [
@@ -206,27 +234,17 @@ const AbiCore = [
         "type": "function"
     },
     {
+        "anonymous": false,
         "inputs": [
             {
+                "indexed": false,
                 "internalType": "uint256",
-                "name": "eventId",
+                "name": "_tokenId",
                 "type": "uint256"
-            },
-            {
-                "internalType": "address",
-                "name": "recipient",
-                "type": "address"
-            },
-            {
-                "internalType": "string",
-                "name": "uri",
-                "type": "string"
             }
         ],
-        "name": "issueCertificate",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
+        "name": "MetadataUpdate",
+        "type": "event"
     },
     {
         "inputs": [
@@ -342,12 +360,46 @@ const AbiCore = [
     {
         "inputs": [
             {
+                "internalType": "address",
+                "name": "to",
+                "type": "address"
+            },
+            {
+                "internalType": "string",
+                "name": "uri",
+                "type": "string"
+            }
+        ],
+        "name": "safeMint",
+        "outputs": [
+            {
                 "internalType": "uint256",
-                "name": "newRate",
+                "name": "",
                 "type": "uint256"
             }
         ],
-        "name": "setRewardPerKg",
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "from",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "to",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "tokenId",
+                "type": "uint256"
+            }
+        ],
+        "name": "safeTransferFrom",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -355,12 +407,45 @@ const AbiCore = [
     {
         "inputs": [
             {
-                "internalType": "uint256[]",
-                "name": "containerIds",
-                "type": "uint256[]"
+                "internalType": "address",
+                "name": "from",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "to",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "tokenId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "bytes",
+                "name": "data",
+                "type": "bytes"
             }
         ],
-        "name": "submitBatchDelivery",
+        "name": "safeTransferFrom",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "operator",
+                "type": "address"
+            },
+            {
+                "internalType": "bool",
+                "name": "approved",
+                "type": "bool"
+            }
+        ],
+        "name": "setApprovalForAll",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -369,11 +454,16 @@ const AbiCore = [
         "inputs": [
             {
                 "internalType": "uint256",
-                "name": "eventId",
+                "name": "tokenId",
                 "type": "uint256"
+            },
+            {
+                "internalType": "string",
+                "name": "uri",
+                "type": "string"
             }
         ],
-        "name": "verifyEvent",
+        "name": "setTokenURI",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -384,194 +474,57 @@ const AbiCore = [
             {
                 "indexed": true,
                 "internalType": "address",
-                "name": "user",
+                "name": "from",
                 "type": "address"
             },
-            {
-                "indexed": true,
-                "internalType": "uint256",
-                "name": "eventId",
-                "type": "uint256"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "weight",
-                "type": "uint256"
-            }
-        ],
-        "name": "WasteDeposited",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
             {
                 "indexed": true,
                 "internalType": "address",
-                "name": "verifier",
+                "name": "to",
                 "type": "address"
             },
             {
                 "indexed": true,
                 "internalType": "uint256",
-                "name": "eventId",
-                "type": "uint256"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "rewardTokens",
+                "name": "tokenId",
                 "type": "uint256"
             }
         ],
-        "name": "WasteVerified",
+        "name": "Transfer",
         "type": "event"
     },
     {
         "inputs": [
             {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "name": "batches",
-        "outputs": [
+                "internalType": "address",
+                "name": "from",
+                "type": "address"
+            },
             {
                 "internalType": "address",
-                "name": "collector",
+                "name": "to",
                 "type": "address"
             },
             {
                 "internalType": "uint256",
-                "name": "totalWeight",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "timestamp",
+                "name": "tokenId",
                 "type": "uint256"
             }
         ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "certificate",
-        "outputs": [
-            {
-                "internalType": "contract IZyrcleCertificate",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "name": "collections",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "collector",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256",
-                "name": "containerId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "string",
-                "name": "containerType",
-                "type": "string"
-            },
-            {
-                "internalType": "string",
-                "name": "photoCid",
-                "type": "string"
-            },
-            {
-                "internalType": "uint256",
-                "name": "weight",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "timestamp",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "name": "collectionsByContainerId",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "collector",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256",
-                "name": "containerId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "string",
-                "name": "containerType",
-                "type": "string"
-            },
-            {
-                "internalType": "string",
-                "name": "photoCid",
-                "type": "string"
-            },
-            {
-                "internalType": "uint256",
-                "name": "weight",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "timestamp",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
+        "name": "transferFrom",
+        "outputs": [],
+        "stateMutability": "nonpayable",
         "type": "function"
     },
     {
         "inputs": [
             {
                 "internalType": "address",
-                "name": "",
+                "name": "owner",
                 "type": "address"
-            },
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
             }
         ],
-        "name": "collectorDailyBatch",
+        "name": "balanceOf",
         "outputs": [
             {
                 "internalType": "uint256",
@@ -599,65 +552,16 @@ const AbiCore = [
         "inputs": [
             {
                 "internalType": "uint256",
+                "name": "tokenId",
+                "type": "uint256"
+            }
+        ],
+        "name": "getApproved",
+        "outputs": [
+            {
+                "internalType": "address",
                 "name": "",
-                "type": "uint256"
-            }
-        ],
-        "name": "events",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "user",
                 "type": "address"
-            },
-            {
-                "internalType": "uint256",
-                "name": "weight",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "timestamp",
-                "type": "uint256"
-            },
-            {
-                "internalType": "bool",
-                "name": "verified",
-                "type": "bool"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "eventId",
-                "type": "uint256"
-            }
-        ],
-        "name": "getEvent",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "user",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256",
-                "name": "weight",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "timestamp",
-                "type": "uint256"
-            },
-            {
-                "internalType": "bool",
-                "name": "verified",
-                "type": "bool"
             }
         ],
         "stateMutability": "view",
@@ -707,13 +611,24 @@ const AbiCore = [
         "type": "function"
     },
     {
-        "inputs": [],
-        "name": "nextBatchId",
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "owner",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "operator",
+                "type": "address"
+            }
+        ],
+        "name": "isApprovedForAll",
         "outputs": [
             {
-                "internalType": "uint256",
+                "internalType": "bool",
                 "name": "",
-                "type": "uint256"
+                "type": "bool"
             }
         ],
         "stateMutability": "view",
@@ -721,33 +636,7 @@ const AbiCore = [
     },
     {
         "inputs": [],
-        "name": "nextCollectionId",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "nextEventId",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "RATE_SETTER_ROLE",
+        "name": "MINTER_ROLE",
         "outputs": [
             {
                 "internalType": "bytes32",
@@ -760,12 +649,31 @@ const AbiCore = [
     },
     {
         "inputs": [],
-        "name": "rewardPerKg",
+        "name": "name",
         "outputs": [
             {
-                "internalType": "uint256",
+                "internalType": "string",
                 "name": "",
+                "type": "string"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "tokenId",
                 "type": "uint256"
+            }
+        ],
+        "name": "ownerOf",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
             }
         ],
         "stateMutability": "view",
@@ -792,12 +700,31 @@ const AbiCore = [
     },
     {
         "inputs": [],
-        "name": "token",
+        "name": "symbol",
         "outputs": [
             {
-                "internalType": "contract IZyrcleToken",
+                "internalType": "string",
                 "name": "",
-                "type": "address"
+                "type": "string"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "tokenId",
+                "type": "uint256"
+            }
+        ],
+        "name": "tokenURI",
+        "outputs": [
+            {
+                "internalType": "string",
+                "name": "",
+                "type": "string"
             }
         ],
         "stateMutability": "view",
@@ -805,7 +732,7 @@ const AbiCore = [
     },
     {
         "inputs": [],
-        "name": "VERIFIER_ROLE",
+        "name": "URI_SETTER_ROLE",
         "outputs": [
             {
                 "internalType": "bytes32",
@@ -818,4 +745,4 @@ const AbiCore = [
     }
 ]
 
-export default AbiCore;
+export default AbiCertificate;

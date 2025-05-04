@@ -21,10 +21,9 @@ export const connectWallet = async () => {
 
             const account = accounts[0]; // Usar la primera cuenta
             const zyrcleCoreAbi = AbiCore;
-            const zyrcleCoreAddress = "0x6312374fFCe6e7967021d740805e34E3adD24AAf"; // Dirección del contrato ZyrcleCore
+            const zyrcleCoreAddress = "0x3B677E9ab4C216433Aadc61341DB3C750B493C1b"; // Dirección del contrato ZyrcleCore
 
-            // Solo inicializamos el contrato si tenemos una cuenta válida
-            const zyrcleCore = new web3.eth.Contract(zyrcleCoreAbi, zyrcleCoreAddress);
+            const zyrcleCore = new web3.eth.Contract(zyrcleCoreAbi, zyrcleCoreAddress); // Solo inicializamos el contrato si tenemos una cuenta válida
 
             return { account, zyrcleCore };  // Retorna la cuenta y el contrato
         } catch (error) {
