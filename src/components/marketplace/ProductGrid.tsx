@@ -59,7 +59,7 @@ export function ProductGrid() {
 
             const result = await contract.methods.safeMint(account, item.uri).send({ from: account });
 
-            // ✅ Debug completo (puedes eliminar en producción)
+            // ✅ Debug completo (puedes eliminar en producción)    
             console.log("Transaction result:", result);
 
             // ✅ Buscar evento Transfer emitido hacia este usuario

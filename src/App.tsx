@@ -21,33 +21,38 @@ const queryClient = new QueryClient();
 
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
+  const [walletConnected, setWalletConnected] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
-    const checkWallet = async () => {
+    const checkConnection = async () => {
       const connected = await isWalletConnected();
-      const storedConnected = localStorage.getItem("walletConnected") === "true";
-      if (location.pathname !== "/" && (!connected || !storedConnected)) {
+      const remembered = localStorage.getItem("walletConnected") === "true";
+      if (!connected || !remembered) {
+        setWalletConnected(false);
         setIsWalletModalOpen(true);
       } else {
+        setWalletConnected(true);
         setIsWalletModalOpen(false);
       }
     };
-    checkWallet();
+
+    checkConnection();
   }, [location.pathname]);
 
-  const handleConnectWallet = async () => {
+  const handleConnect = async () => {
     try {
-      await connectWallet();
+      const { account } = await connectWallet();
       localStorage.setItem("walletConnected", "true");
+      sessionStorage.setItem("walletAddress", account);
+      setWalletConnected(true);
       setIsWalletModalOpen(false);
       toast.success("Wallet Connected", {
         description: "You are now connected to your wallet.",
       });
-    } catch (error) {
-      console.error("Error connecting wallet:", error);
-      toast.error("Connection Failed", {
-        description: "Failed to connect wallet. Please try again.",
+    } catch (err) {
+      toast.error("Failed to connect wallet", {
+        description: "Please try again.",
       });
     }
   };
@@ -63,13 +68,13 @@ const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
               Connect Your Wallet
             </DialogTitle>
             <DialogDescription className="text-eco-forest/70">
-              Please connect your wallet to access this page.
+              Please connect your wallet to continue.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button
-              className="w-full bg-eco-emerald text-white hover:bg-eco-emerald/90 hover:scale-105 transition-transform"
-              onClick={handleConnectWallet}
+              className="w-full bg-eco-emerald text-white hover:bg-eco-emerald/90"
+              onClick={handleConnect}
             >
               <Wallet className="h-4 w-4 mr-2" />
               Connect Wallet
