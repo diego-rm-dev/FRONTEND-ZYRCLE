@@ -29,6 +29,8 @@ import { configDotenv } from 'dotenv'
 import AbiCore from "@/lib/Abis";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogTitle } from "@radix-ui/react-alert-dialog";
 import { AlertDialogFooter, AlertDialogHeader } from "../ui/alert-dialog";
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@radix-ui/react-dialog";
+import { DialogFooter, DialogHeader } from "../ui/dialog";
 
 export function ContainerVerification() {
     const { containerId } = useParams();
@@ -336,84 +338,95 @@ export function ContainerVerification() {
                             )}
 
                             {qrScanned && containerData && (
-                                <>
-                                    {/* Info contenedor */}
-                                    <div className="bg-eco-forest/10 p-4 rounded-lg">
-                                        <h3 className="text-lg font-semibold text-eco-forest">Container Details</h3>
-                                        <p className="text-sm text-eco-forest/80">Address: {containerData.address}</p>
-                                        <p className="text-sm text-eco-forest/80">Type: {containerData.type}</p>
-                                        <p className="text-sm text-eco-forest/80">Weight: {containerData.estimatedWeight} kg</p>
-                                        <p className="text-sm text-eco-forest/80">Fill Level: {containerData.fillPercentage}%</p>
-                                        <Badge className={`${statusColor(containerData.status)} mt-2`}>
-                                            {containerData.status}
-                                        </Badge>
+                                <div className="space-y-6">
+                                    {/* Información del contenedor */}
+                                    <div className="p-6 bg-white rounded-2xl shadow border border-gray-200">
+                                        <h3 className="text-xl font-semibold text-eco-forest mb-4 flex items-center">
+                                            <CheckCircle className="h-5 w-5 mr-2 text-eco-emerald" />
+                                            Container Details
+                                        </h3>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-6 text-sm text-eco-forest">
+                                            <div><span className="font-semibold">Address:</span> {containerData.address}</div>
+                                            <div><span className="font-semibold">Type:</span> {containerData.type}</div>
+                                            <div><span className="font-semibold">Weight:</span> {containerData.estimatedWeight} kg</div>
+                                            <div><span className="font-semibold">Fill Level:</span> {containerData.fillPercentage}%</div>
+                                        </div>
+                                        <div className="mt-4">
+                                            <Badge className={`${statusColor(containerData.status)} px-3 py-1 rounded-full text-sm font-medium`}>
+                                                {containerData.status}
+                                            </Badge>
+                                        </div>
                                     </div>
 
-                                    {/* Foto */}
-                                    <div className="space-y-2">
-                                        <Label className="text-eco-forest">Upload Photo of Open Container</Label>
-                                        <div className="flex items-center space-x-2">
+                                    {/* Subida de foto */}
+                                    <div className="space-y-3">
+                                        <Label className="text-eco-forest font-medium">Upload a photo of the container</Label>
+                                        <div className="flex items-center gap-3">
                                             <Input
                                                 type="file"
                                                 accept="image/*"
-                                                capture="environment"
                                                 onChange={handlePhotoChange}
                                                 ref={fileInputRef}
                                                 className="hidden"
                                             />
-                                            <Button
-                                                onClick={() => fileInputRef.current?.click()}
-                                                className="bg-eco-lime hover:bg-eco-lime-dark text-white"
-                                            >
-                                                <Camera className="h-5 w-5 mr-2" />
+                                            <Button onClick={() => fileInputRef.current?.click()} className="bg-eco-lime text-white hover:bg-eco-lime-dark">
+                                                <Camera className="w-4 h-4 mr-2" />
                                                 Take Photo
                                             </Button>
                                         </div>
                                         {photoPreview && (
-                                            <img src={photoPreview} alt="Preview" className="mt-4 rounded-lg shadow-sm w-full max-w-md" />
+                                            <div className="mt-2">
+                                                <img
+                                                    src={photoPreview}
+                                                    alt="Preview"
+                                                    className="rounded-xl border border-gray-200 shadow-md max-w-full w-full sm:w-80"
+                                                />
+                                            </div>
                                         )}
                                     </div>
 
-                                    {/* IPFS ID */}
-                                    {contentId && (
-                                        <div className="bg-eco-forest/10 p-4 rounded-lg">
-                                            <p className="text-sm text-eco-forest/80">IPFS Content ID:</p>
-                                            <p className="text-eco-forest font-mono break-all">{contentId}</p>
+                                    {showConfirm && (
+                                        <div className="mt-8 flex justify-center">
+                                            <div className="bg-white border border-eco-emerald rounded-xl shadow-lg p-6 w-full max-w-md text-center">
+                                                <div className="flex items-center justify-center mb-3 text-eco-forest">
+                                                    <CheckCircle className="h-6 w-6 mr-2 text-eco-emerald" />
+                                                    <h3 className="text-xl font-semibold">Confirm Collection</h3>
+                                                </div>
+                                                <p className="text-sm text-eco-forest/70 mb-4">
+                                                    Are you sure you want to confirm and save this collection?
+                                                </p>
+                                                <div className="flex justify-center gap-4">
+                                                    <Button
+                                                        variant="outline"
+                                                        onClick={() => setShowConfirm(false)}
+                                                        className="px-6"
+                                                    >
+                                                        Cancel
+                                                    </Button>
+                                                    <Button
+                                                        onClick={() => {
+                                                            setShowConfirm(false);
+                                                            handleSubmit();
+                                                        }}
+                                                        className="bg-eco-emerald text-white px-6"
+                                                    >
+                                                        Confirm
+                                                    </Button>
+                                                </div>
+                                            </div>
                                         </div>
                                     )}
-                                    <AlertDialog open={showConfirm} onOpenChange={setShowConfirm}>
-                                        <AlertDialogContent>
-                                            <AlertDialogHeader>
-                                                <AlertDialogTitle>Confirm Collection</AlertDialogTitle>
-                                                <AlertDialogDescription>
-                                                    Are you sure you want to verify and mark this container as collected?
-                                                </AlertDialogDescription>
-                                            </AlertDialogHeader>
-                                            <AlertDialogFooter>
-                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                <AlertDialogAction
-                                                    onClick={() => {
-                                                        setShowConfirm(false);
-                                                        handleSubmit(); // envía y redirige
-                                                    }}
-                                                >
-                                                    Confirm
-                                                </AlertDialogAction>
-                                            </AlertDialogFooter>
-                                        </AlertDialogContent>
-                                    </AlertDialog>
 
-
+                                    {/* Botón de envío */}
                                     <Button
-                                        onClick={() => setShowConfirm(true)}
                                         disabled={uploading}
+                                        onClick={() => setShowConfirm(true)}
                                         className="w-full bg-eco-emerald hover:bg-eco-emerald-dark text-white"
                                     >
-                                        <CheckCircle className="h-5 w-5 mr-2" />
+                                        <UploadCloud className="w-5 h-5 mr-2" />
                                         Submit Verification
                                     </Button>
-
-                                </>
+                                </div>
                             )}
                         </CardContent>
                     </Card>

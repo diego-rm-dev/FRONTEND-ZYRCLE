@@ -1,6 +1,7 @@
 // services/web3Service.js
 import Web3 from "web3";
 import { ABI } from '../lib/utils'
+import AbiCore from '../lib/Abis'
 
 // Instancia global de Web3
 let web3Instance = null;
@@ -19,8 +20,8 @@ export const connectWallet = async () => {
             }
 
             const account = accounts[0]; // Usar la primera cuenta
-            const zyrcleCoreAbi = ABI;
-            const zyrcleCoreAddress = "0x81C0734Ab8ABcDDa159fB058610747fA4E83790d"; // Dirección del contrato ZyrcleCore
+            const zyrcleCoreAbi = AbiCore;
+            const zyrcleCoreAddress = "0x6312374fFCe6e7967021d740805e34E3adD24AAf"; // Dirección del contrato ZyrcleCore
 
             // Solo inicializamos el contrato si tenemos una cuenta válida
             const zyrcleCore = new web3.eth.Contract(zyrcleCoreAbi, zyrcleCoreAddress);
